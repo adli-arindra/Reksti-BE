@@ -9,19 +9,16 @@ router = APIRouter()
 async def attend_class(data: AttendRequest):
     try:
         input_encoding = get_encoding_base64(data.foto_wajah)
+        print(input_encoding)
         if input_encoding is None:
             raise ValueError("No face detected")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to process photo: {str(e)}")
 
-    stored_encoding = Encoding.read(data.NIM)
-    if stored_encoding is None:
-        raise HTTPException(status_code=404, detail="Student encoding not found")
+    matched_nim = Encoding.match(input_encoding)
+    if matched_nim == -1:
+        return {"status": False, "message": "No matching face found"}
 
-    match = compare(stored_encoding, input_encoding)
+    ClassEntry.update(data.class_uid, matched_nim, True)
+    return {"status": True, "message": "Attendance recorded", "student": matched_nim}
 
-    if match:
-        ClassEntry.update(data.class_uid, data.NIM, True)
-        return {"status": True, "message": "Attendance recorded"}
-    else:
-        return {"status": False, "message": "Face mismatch"}

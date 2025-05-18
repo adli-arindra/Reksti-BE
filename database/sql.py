@@ -2,6 +2,7 @@ import sqlite3
 import json
 import os
 from typing import List, Optional
+from src.model import euclidean_distance
 
 DEFAULT_DATABASE_PATH = "local_database.db"
 
@@ -91,6 +92,28 @@ class Encoding:
     def delete(nim: str):
         with db.connect() as conn:
             conn.execute("DELETE FROM encodings WHERE nim = ?", (nim,))
+    
+
+    @staticmethod
+    def match(input_vector, threshold=0.6):
+        with db.connect() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT nim, vector FROM encodings")
+
+            best_nim = -1
+            min_diff = float('inf')
+
+            for nim, vector_json in cursor.fetchall():
+                try:
+                    stored_vector = json.loads(vector_json)
+                    diff = euclidean_distance(input_vector, stored_vector)
+                    if diff < min_diff and diff <= threshold:
+                        min_diff = diff
+                        best_nim = nim
+                except:
+                    continue
+
+            return best_nim
 
 
 class ClassEntry:

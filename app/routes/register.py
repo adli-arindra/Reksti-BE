@@ -7,9 +7,10 @@ router = APIRouter()
 
 @router.post("/register", response_model=RegisterResponse)
 async def register_student(data: RegisterRequest):
-    Student.create(data.NIM, data.nama_lengkap, [])
     encoding = get_encoding_base64(data.foto_wajah)
+    print(encoding)
     Encoding.create(data.NIM, encoding)
+    Student.create(data.NIM, data.nama_lengkap, [])
 
     return {"status": True, "message": "Registered successfully"}
 

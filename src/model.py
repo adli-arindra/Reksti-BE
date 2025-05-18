@@ -9,6 +9,8 @@ def get_encoding_base64(base64_str: str):
     try:
         if base64_str.startswith('data:image/jpeg;base64,'):
             base64_str = base64_str.replace('data:image/jpeg;base64,', '')
+        elif base64_str.startswith('data:image/png;base64,'):
+            base64_str = base64_str.replace('data:image/png;base64,', '')
 
         image_data = base64.b64decode(base64_str)
         image = Image.open(BytesIO(image_data)).convert("RGB")
@@ -29,7 +31,7 @@ def get_encoding(path: str):
     except:
         return None
 
-def euclidean_distance(vec1, vec2):
+def euclidean_distance(vec1, vec2) -> float:
     if len(vec1) != len(vec2):
         raise ValueError("Vectors must be of same length.")
     

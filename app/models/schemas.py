@@ -15,13 +15,13 @@ class StudentResponse(BaseModel):
     class_uids: List[str]
 
 class AttendRequest(BaseModel):
-    NIM: str
     class_uid: str
     foto_wajah: str
 
 class AttendResponse(BaseModel):
     status: bool
     message: str
+    student: str
 
 class ClassCreateRequest(BaseModel):
     student: List[str]
